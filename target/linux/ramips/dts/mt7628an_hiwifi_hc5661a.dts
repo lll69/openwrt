@@ -32,10 +32,4 @@
 	};
 };
 
-&ehci {
-	status = "disabled";
-};
 
-&ohci {
-	status = "disabled";
-};
