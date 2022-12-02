@@ -1063,10 +1063,7 @@ static int rtl83xx_port_enable(struct dsa_switch *ds, int port,
 	priv->ports[port].enable = true;
 
 	/* enable inner tagging on egress, do not keep any tags */
-	if (priv->family_id == RTL9310_FAMILY_ID)
-		sw_w32(BIT(4), priv->r->vlan_port_tag_sts_ctrl + (port << 2));
-	else
-		sw_w32(1, priv->r->vlan_port_tag_sts_ctrl + (port << 2));
+	priv->r->vlan_port_keep_tag_set(port, 0, 1);
 
 	if (dsa_is_cpu_port(ds, port))
 		return 0;
@@ -1446,7 +1443,7 @@ static void rtl83xx_vlan_add(struct dsa_switch *ds, int port,
 	struct rtl838x_switch_priv *priv = ds->priv;
 	int v;
 
-	pr_debug("%s port %d, vid_end %d, vid_end %d, flags %x\n", __func__,
+	pr_debug("%s port %d, vid_begin %d, vid_end %d, flags %x\n", __func__,
 		port, vlan->vid_begin, vlan->vid_end, vlan->flags);
 
 	if (vlan->vid_begin > 4095 || vlan->vid_end > 4095) {
@@ -1511,7 +1508,7 @@ static int rtl83xx_vlan_del(struct dsa_switch *ds, int port,
 	int v;
 	u16 pvid;
 
-	pr_debug("%s: port %d, vid_end %d, vid_end %d, flags %x\n", __func__,
+	pr_debug("%s: port %d, vid_begin %d, vid_end %d, flags %x\n", __func__,
 		port, vlan->vid_begin, vlan->vid_end, vlan->flags);
 
 	if (vlan->vid_begin > 4095 || vlan->vid_end > 4095) {
